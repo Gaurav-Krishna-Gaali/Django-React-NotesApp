@@ -33,12 +33,23 @@ const NotePage = ({ match }) => {
     history("/");
   };
 
+  let deleteNote = async () => {
+    fetch(`/api/notes/${noteId}/delete/`, {
+      method: "DELETE",
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
+    history("/");
+  };
+
   return (
     <div className="note">
       <div className="note-header">
         <h3>
           <Arrowleft onClick={handleSubmit} />
         </h3>
+        <button onClick={deleteNote}>Delete</button>
       </div>
       <textarea
         onChange={(e) => {
