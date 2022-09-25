@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { ReactComponent as Arrowleft } from "../assets/arrow-left.svg";
 
-const NotePage = ({ match }) => {
+const NotePage = () => {
   let { id: noteId } = useParams();
   const history = useNavigate();
 
@@ -13,6 +13,8 @@ const NotePage = ({ match }) => {
   }, [noteId]);
 
   let getNote = async () => {
+    if (noteId === "new ") return;
+
     let response = await fetch(`/api/notes/${noteId}`);
     let data = await response.json();
     setNote(data);
@@ -28,8 +30,31 @@ const NotePage = ({ match }) => {
     });
   };
 
+  let createeNote = async () => {
+    fetch(`/api/notes/create/`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(note),
+    });
+    history("/");
+  };
+
   let handleSubmit = () => {
-    updateNote();
+    console.log("SUBMITTING", noteId);
+    if (noteId === "new " && !note.body) {
+      deleteNote();
+      console.log("delte", noteId);
+    } else if (noteId === "new " && note !== null) {
+      createeNote();
+      console.log("create", noteId);
+    } else if (noteId !== "new ") {
+      updateNote();
+      console.log("update", noteId);
+    }
+    // updateNote() && console.log("submitted");
+
     history("/");
   };
 
@@ -49,7 +74,12 @@ const NotePage = ({ match }) => {
         <h3>
           <Arrowleft onClick={handleSubmit} />
         </h3>
-        <button onClick={deleteNote}>Delete</button>
+        {console.log(noteId)}
+        {noteId !== "new " ? (
+          <button onClick={deleteNote}>Delete</button>
+        ) : (
+          <button onClick={handleSubmit}>Done</button>
+        )}
       </div>
       <textarea
         onChange={(e) => {
